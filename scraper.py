@@ -39,7 +39,7 @@ qchildlist = qholder.findChildren()
 for qchild in qchildlist:
     if qchild['value'] == '0|0':
         continue
-        
+
     newQuarter = {'name':qchild.text.replace('CAL POLY POMONA - ', ''), 'departments':[]}
     url1 = 'http://www.broncobookstore.com/textbooks_xml.asp?control=campus&campus='+qchild['value'].split('|')[0]+'&term='+qchild['value'].split('|')[1]+'&t=1337387733434'
     req1 = urllib2.Request(url1)
@@ -72,46 +72,46 @@ for qchild in qchildlist:
                 the_book_page = getPage(req4)
                 soup4 = BeautifulSoup.BeautifulSoup(the_book_page)
                 for booktable in soup4.findChildren('tr', attrs={'class':BeautifulSoup.re.compile(r'(book course-required.*)|(book course-optional.*)|(book course-part of set.*)')}):
-                    
+
                     newBook = {}
                     desc = booktable.find('td',attrs={'class':'book-desc'})
                     # no books listed
                     if desc == None:
                         continue
-                        
+
                     if (desc.find('span',attrs={'class':'isbn'}) == None):
                         continue
                     else:
                         newBook['ISBN'] = int(desc.find('span',attrs={'class':'isbn'}).text)
-                        
+
                     if (desc.find('span',attrs={'class':'book-meta book-author'}) == None):
                         newBook['author'] = None
                     else:
                         newBook['author'] = desc.find('span',attrs={'class':'book-meta book-author'}).text
-                     
+
                     if (desc.find('span',attrs={'class':'book-meta book-edition'}) == None):
                         newBook['edition'] = None
                     else:
                          # looks like Edition&nbsp;8 at first
                         newBook['edition'] = desc.find('span',attrs={'class':'book-meta book-edition'}).text.strip('Edition&nbsp;')
-                        
+
                     if (desc.find('p',attrs={'class':'book-req'}) == None):
                         newBook['isRequired'] = None
                     else:
                         newBook['isRequired'] = desc.find('p',attrs={'class':'book-req'}).text
-                    
+
                     if (desc.find('span',attrs={'class':'book-meta book-edition'}) == None):
                         newBook['binding'] = None
                     else:
                         newBook['binding']  = desc.find('span',attrs={'class':'book-meta book-binding'}).text.strip('Binding&nbsp;')
-                        
+
                     if (desc.find('span',attrs={'class':'book-title'}) == None):
                         newBook['title'] = None
                     else:
                         newBook['title']  = desc.find('span',attrs={'class':'book-title'}).text
-                   
+
                     pricestuff = booktable.find('td',attrs={'class':'book-pref'})
-                    
+
                     if(pricestuff == None or pricestuff.find('span', attrs={'class':'book-price-list'}) == None):
                          newBook['broncoListPrice'] = None
                     else:
@@ -125,11 +125,9 @@ for qchild in qchildlist:
 import time
 import difflib
 import pprint
-data = pickle.load(open('/home/satshabad/CS/Web_Projects/hellodjango-scraper/courseData.txt'))
+data = pickle.load(open('courseData.txt'))
 
 result =  '\n'.join(difflib.unified_diff(pprint.pformat(data).splitlines(), pprint.pformat(quarterList).splitlines()))
 if result:
-    pickle.dump(quarterList,  open('/home/satshabad/CS/Web_Projects/theBookListr/Course-Data/'+str(time.ctime()).replace(' ', '-'),'w'))
-    pickle.dump(quarterList,  open('/home/satshabad/CS/Web_Projects/hellodjango-scraper/courseData.txt','w'))
-    print result
+    pickle.dump(quarterList,  open('courseData.txt','w'))
 
